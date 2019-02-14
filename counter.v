@@ -60,10 +60,7 @@ module counter(
 			else begin
 				secUnitDig_count <= secUnitDig_count + 4'b1;
 			end
-			else If (secUnitDig_count == 9 && minUnitsDig_count == 9 &&
-secTensDig_count == 5 && minTensDig_count )begin
-		reset<=~reset;
-    end
+			
 
 		end
 
@@ -118,11 +115,9 @@ secTensDig_count == 5 && minTensDig_count )begin
 			else begin
 				secUnitDig_count <= secUnitDig_count + 4'b1;
 			end
-			else If (secUnitDig_count == 9 && minUnitsDig_count == 9 &&
-secTensDig_count == 5 && minTensDig_count )
-		reset<=~reset;
 
-		end
+
+
 
 		end
 			
