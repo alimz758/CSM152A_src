@@ -100,7 +100,7 @@ module counter(
          	
 		end//end of ADJ=0 statement			
 		//  ----------------- ADJ==1 , Adjustment Mode ---------------------
-		if(ADJ==1) begin//beginning of ADJ=1 statement
+		if(ADJ==1 && paused) begin//beginning of ADJ=1 statement
             
             
      
