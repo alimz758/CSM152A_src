@@ -35,11 +35,11 @@ module counter(
 	always@(*)begin
 		//when the adjustment mode in one, pause the stopwatch
 		if(ADJ==1)begin
-			paused<=~paused;
-		end
-		//otherwise continue
-		else begin
 			paused<=paused;
+		end
+		//otherwise unpause and contine
+		else begin
+			paused<=~paused;
 		end
 	end
 	//-------------------------Start the stopwatch with the normal behavior --------------------
