@@ -145,7 +145,7 @@ module counter(
 			    //if NUM for min1 is greater than5
                         if(NUM>5)begin
 				//assign 5 to min1
-                            minTensDig_count<=5;
+                            minTensDig_count<=4'b0101;
                         end
                         else begin
                             minTensDig_count<=NUM;
