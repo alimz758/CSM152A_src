@@ -20,7 +20,7 @@ module counter(
 	reg [3:0] secUnitDig_count = 4'b0000;
 	
 	//------------------------------pause mode ----------------------------------
-    //local pause var to control pause in different modes
+    //local pause reg to control pause in different modes
 	reg paused =0;
 	always @ (posedge clk_c && posedge pause_c) begin
 		if (pause_c) begin
@@ -80,7 +80,7 @@ module counter(
 		//  ----------------- ADJ==1 , Adjustment Mode ---------------------
 		if(ADJ==1) begin
             //when go to ADJ mode, by default pause the stopwatch
-            paused<=~paused;
+            paused<=paused;
             //SEL cases: 2'b00, 2'b01, 2'b10, 2'b11
      
             //if the user press puase, then assign the value 
@@ -126,17 +126,18 @@ module counter(
                     end
                 endcase //end switching for SEL
              end
-             //unpause when the adjustment mode is over
-             paused<=~paused;
+             
          end
          //if end of stopwatch --- 59:59----,reset the stop watch
          if( minTensDig_count==5 && minUnitDig_count==9 && secTensDig_count==5 && secUnitDig_count==9)begin
             //make all the digit counters to be zero
-            minTensDig_count <= 4'b0000;
+           			 minTensDig_count <= 4'b0000;
 			minUnitDig_count <= 4'b0000;
 			secTensDig_count <= 4'b0000;
 			secUnitDig_count <= 4'b0000;
          end
+	//unpause when the adjustment mode is over
+         paused<=~paused;
     end//end of always block
     
 	//assign the local counters to the output
