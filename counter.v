@@ -21,12 +21,15 @@ module counter(
 	
 	//------------------------------pause mode ----------------------------------
     //local pause reg to control pause_c 
-	reg paused =0;
+	reg paused =1;// true by default
 	always @ (posedge clk_c && posedge pause_c) begin
+		//if pause button pressed
 		if (pause_c) begin
+			//make the reg pause true, as in pausing the stopwatch
 			paused <= ~paused;
 		end
 		else begin
+			//otherwise 
 			paused <= paused;
 		end
 	end//end of pause mode block
@@ -35,11 +38,11 @@ module counter(
 	always@(*)begin
 		//when the adjustment mode in one, pause the stopwatch
 		if(ADJ==1)begin
-			paused<=paused;
-		end
-		//otherwise unpause and contine
-		else begin
 			paused<=~paused;
+		end
+		//otherwise go with the default value with is true and contine
+		else begin
+			paused<=paused;
 		end
 	end
 	//-------------------------Start the stopwatch with the normal behavior --------------------
@@ -54,7 +57,7 @@ module counter(
 		end//end of reset statement
 
 		//------------- ADJ MODE ==0 ------ Normal Behavior -----------------------------
-		if (ADJ==0 && ~paused) begin//beginning of ADJ=0 mode
+		if (ADJ==0 && paused==1) begin//beginning of ADJ=0 mode, and not paused then count
 			// if end of seconds counter **:59
 			if (secUnitDig_count == 9 && secTensDig_count == 5) begin
 				// reset both seconds digits
@@ -100,7 +103,7 @@ module counter(
          	
 		end//end of ADJ=0 statement			
 		//  ----------------- ADJ==1 , Adjustment Mode ---------------------
-		if(ADJ==1 && paused) begin//beginning of ADJ=1 statement
+		if(ADJ==1 && paused==0) begin//if ADJ is on and paused
             
             
      
