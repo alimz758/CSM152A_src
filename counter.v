@@ -20,7 +20,7 @@ module counter(
 	reg [3:0] secUnitDig_count = 4'b0000;
 	
 	//------------------------------pause mode ----------------------------------
-    //local pause reg to control pause in different modes
+    //local pause reg to control pause_c 
 	reg paused =0;
 	always @ (posedge clk_c && posedge pause_c) begin
 		if (pause_c) begin
@@ -29,8 +29,21 @@ module counter(
 		else begin
 			paused <= paused;
 		end
-	end	
+	end//end of pause mode block
+	
+	// ---------------always block for ADJ mode, when it is 1 make the stopwatch to stop-------------
+	always@(*)begin
+		//when the adjustment mode in one, pause the stopwatch
+		if(ADJ==1)begin
+			paused<=~paused;
+		end
+		//otherwise continue
+		else begin
+			paused<=paused;
+		end
+	end
 	//-------------------------Start the stopwatch with the normal behavior --------------------
+	//always block that checks for reset mode
 	always @(posedge clk_c || posedge reset_c) begin
 		//reset all the digits to zero, if reset button got used 
 		if (reset_c) begin
@@ -38,9 +51,10 @@ module counter(
 			minUnitDig_count <= 4'b0000;
 			secTensDig_count <= 4'b0000;
 			secUnitDig_count <= 4'b0000;
-		end
+		end//end of reset statement
+
 		//------------- ADJ MODE ==0 ------ Normal Behavior -----------------------------
-		if (ADJ==0 && ~paused) begin
+		if (ADJ==0 && ~paused) begin//beginning of ADJ=0 mode
 			// if end of seconds counter **:59
 			if (secUnitDig_count == 9 && secTensDig_count == 5) begin
 				// reset both seconds digits
@@ -76,21 +90,30 @@ module counter(
             //increament sec0 if non of the above cases apply
 				secUnitDig_count <= secUnitDig_count + 4'b1;
 			end
-		end			
+			if( minTensDig_count==5 && minUnitDig_count==9 && secTensDig_count==5 && secUnitDig_count==9)begin
+            			//make all the digit counters to be zero
+           			 minTensDig_count <= 4'b0000;
+				minUnitDig_count <= 4'b0000;
+				secTensDig_count <= 4'b0000;
+				secUnitDig_count <= 4'b0000;
+			end
+         	
+		end//end of ADJ=0 statement			
 		//  ----------------- ADJ==1 , Adjustment Mode ---------------------
-		if(ADJ==1) begin
-            //when go to ADJ mode, by default pause the stopwatch
-            paused<=paused;
-            //SEL cases: 2'b00, 2'b01, 2'b10, 2'b11
+		if(ADJ==1) begin//beginning of ADJ=1 statement
+            
+            
      
             //if the user press puase, then assign the value 
             if(pause_c)
+		//SEL cases: 2'b00, 2'b01, 2'b10, 2'b11
                 case(SEL)
                     //choosing sec0 to adjust
                     2'b00:begin
                         //if the NUM inserted bigger than 9 for sec0, make it 9
                         if(NUM>9)begin
-                            minUnitDig_count<=9;
+				//assign 9 to sec0
+                            secUnitDig_count<=4'b1001;
                         end
                         else begin
                             secUnitDig_count<=NUM;
@@ -100,7 +123,8 @@ module counter(
                     2'b01:begin
                         //if adjusted NUM for sec1 is greater 5, make it 5
                         if(NUM>5)begin
-                            secTensDig_count<=5;
+				//assign 5 to sec1
+                            secTensDig_count<=4'b0101;
                         end
                         else begin
                             secTensDig_count<=NUM;
@@ -109,15 +133,18 @@ module counter(
                     //choosing min0 to adjust
                     2'b10:begin
                         if(NUM>9)begin
-                            minUnitDig_count<=9;
+				//assign 9 to min0
+                            minUnitDig_count<=4'b1001;
                         end
                         else begin
                             minUnitDig_count<=NUM;
                         end
                     end
+		//choosing min1 to adjust
                     2'b11:begin
-                    //choosing min1 to adjust
+			    //if NUM for min1 is greater than5
                         if(NUM>5)begin
+				//assign 5 to min1
                             minTensDig_count<=5;
                         end
                         else begin
@@ -125,19 +152,11 @@ module counter(
                         end
                     end
                 endcase //end switching for SEL
-             end
+		end// end if for pause_c mode
              
-         end
+	end//end for ADJ=1 mode
          //if end of stopwatch --- 59:59----,reset the stop watch
-         if( minTensDig_count==5 && minUnitDig_count==9 && secTensDig_count==5 && secUnitDig_count==9)begin
-            //make all the digit counters to be zero
-           			 minTensDig_count <= 4'b0000;
-			minUnitDig_count <= 4'b0000;
-			secTensDig_count <= 4'b0000;
-			secUnitDig_count <= 4'b0000;
-         end
-	//unpause when the adjustment mode is over
-         paused<=~paused;
+         
     end//end of always block
     
 	//assign the local counters to the output
