@@ -95,14 +95,6 @@ module counter(
             //increament sec0 if non of the above cases apply
 				secUnitDig_count <= secUnitDig_count + 4'b0001;
 			end
-			//if counter is at 59:59, make all the digits zero
-			if( minTensDig_count==4'b0101 && minUnitDig_count==4'b1001 && secTensDig_count==4'b0101 && secUnitDig_count==4'b1001)begin
-            			//make all the digit counters to be zero
-           			 minTensDig_count <= 4'b0000;
-				minUnitDig_count <= 4'b0000;
-				secTensDig_count <= 4'b0000;
-				secUnitDig_count <= 4'b0000;
-			end
          	
 		end//end of ADJ=0 statement			
 		//  ----------------- ADJ==1 , Adjustment Mode ---------------------
