@@ -34,7 +34,7 @@ module counter(
 		end
 	end//end of pause mode block
 	
-	// ---------------always block for ADJ mode, when it is 1 make the stopwatch to stop-------------
+	// ---------------always block for ADJ mode, when it is 1 make the stopwatch to pause -------------
 	always@(*)begin
 		//when the adjustment mode in one, pause the stopwatch
 		if(ADJ==1)begin
@@ -44,8 +44,10 @@ module counter(
 		else begin
 			paused<=paused;
 		end
-	end
+	end//end always blcok for ADJ mode
+	
 	//-------------------------Start the stopwatch with the normal behavior --------------------
+	
 	//always block that checks for reset mode
 	always @(posedge clk_c || posedge reset_c) begin
 		//reset all the digits to zero, if reset button got used 
@@ -59,41 +61,41 @@ module counter(
 		//------------- ADJ MODE ==0 ------ Normal Behavior -----------------------------
 		if (ADJ==0 && paused==1) begin//beginning of ADJ=0 mode, and not paused then count
 			// if end of seconds counter **:59
-			if (secUnitDig_count == 9 && secTensDig_count == 5) begin
+			if (secUnitDig_count == 4'b1001 && secTensDig_count == 4'b0101) begin
 				// reset both seconds digits
 				secUnitDig_count <= 4'b0000;
 				secTensDig_count <= 4'b0000;
 				
 				// then check for min digits, if 59:**
-				if (minUnitDig_count == 9 && minTensDig_count == 5) begin
+				if (minUnitDig_count == 4'b1001 && minTensDig_count == 4'b0101) begin
 					// reset both minutes digits
 					minUnitDig_count <= 4'b0000;
 					minTensDig_count <= 4'b0000;
 				end
                 //if only min0 is max: *9:**
-				else if (minUnitsDig_count == 9) begin
+				else if (minUnitsDig_count == 4'b1001) begin
 					// make min0 zero
-					minUnitsDig_count <= 4'b0;
+					minUnitsDig_count <= 4'b0000;
                     //increament min1
-					minTensDig_count <= minTensDig_count + 4'b1;
+					minTensDig_count <= minTensDig_count + 4'b0001;
 				end
 				else begin
                 //if non of the minutes digits are at their max, increament min0
-					minUnitsDig_count <= minUnitDig_count + 4'b1;
+					minUnitsDig_count <= minUnitDig_count + 4'b0001;
 				end
 			end
             //if only sec0 is 9, **:*9
-			else if (secUnitDig_count == 9) begin
+			else if (secUnitDig_count == 4'b1001) begin
                 //make sec0 zero
-				secUnitDig_count <= 4'b0;
+				secUnitDig_count <= 4'b0000;
                 //increament sec1
-				secTensDig_count <= secTensDig_count + 4'b1;
+				secTensDig_count <= secTensDig_count + 4'b0001;
 			end
 			else begin
             //increament sec0 if non of the above cases apply
-				secUnitDig_count <= secUnitDig_count + 4'b1;
+				secUnitDig_count <= secUnitDig_count + 4'b0001;
 			end
-			if( minTensDig_count==5 && minUnitDig_count==9 && secTensDig_count==5 && secUnitDig_count==9)begin
+			if( minTensDig_count==4'b0101 && minUnitDig_count==4'b1001 && secTensDig_count==4'b0101 && secUnitDig_count==4'b1001)begin
             			//make all the digit counters to be zero
            			 minTensDig_count <= 4'b0000;
 				minUnitDig_count <= 4'b0000;
